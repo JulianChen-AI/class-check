@@ -3,3 +3,7 @@ __pycache__/
 .DS_Store
 .env
 *.key
+source.json
+chat.json
+*.sqlite*
+ocr.json
