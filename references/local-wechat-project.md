@@ -1,59 +1,71 @@
-# 外部聊天来源：WMR 与本机接入
+# WCE 准备、配置与导出
 
-在获取课程群记录时读取本文件。已有满足范围的 `chat.json` 时直接使用，不必启动微信或安装软件。
+在缺少可用聊天档案或需要更新历史时读取。默认负责推进“准备工具 → 导出 → 分析”，而不是把 chat.json 当成用户必须预先提供的材料。
 
-## 依赖边界
+## 1. 工具与依赖边界
 
-[JulianChen-AI/wmr](https://github.com/JulianChen-AI/wmr) 是外部导出工具，不是本 Skill 的组成部分。Skill 不克隆、打包、导入或维护该仓库，不携带 `vendor/`、数据库、账号配置、密钥、模型或真实聊天。
+WCE（微信全导）的官方仓库是 [JulianChen-AI/wmr](https://github.com/JulianChen-AI/wmr)，App 名是 WeChatChatkit。**可以按需下载、安装、调用 WCE，但必须放在 Skill 目录外。**不复制其源码/vendor/环境进本 Skill，不在 Skill 安装脚本中静默捆绑整个仓库。
 
-公开使用方式是通过 App 选择群聊并生成本机档案；不能假设系统存在名为 `wmr` 的 CLI。首次配置、安装或修复不属于课程检查的默认操作。需要时说明缺少什么，让用户决定；不将“检查课程”扩大为部署项目。
+已有可用 WCE、已验证的旧项目入口或满足范围的导出时优先复用，不为新装而重复安装或强制升级既有可用环境。无现成来源时进入以下安装流程，而不是直接让用户自行导出。
 
-## 先检查已配置来源，不先索要导出
+## 2. 按官方方法安装
 
-`scripts/prepare-check.py` 只读探测这些明确位置：显式传入的档案及根目录、`~/.config/class-check/source.json` 中的路径、macOS WMR 的 `~/Library/Application Support/WeChatChatkit/settings.json` 中的 `output_dir`。没有微信 MCP/连接器不代表这些本机入口不存在。探测不会调用微信、读取密钥、自动导出或启动远程服务。
+安装前读取当前 [docs/INSTALL.md](https://github.com/JulianChen-AI/wmr/blob/main/docs/INSTALL.md)、LICENSE 和第三方声明；以下为已核对接口摘要，不替代对当前版本的检查。
 
-仅在用户授权使用现有项目、且已确认实际路径时，可在上述 Skill 私有配置位置新增：
+- 当前源码构建方案面向 Apple Silicon / 原生 arm64、macOS 13+、Python 3.11。环境不符合时说明不支持，不假装安装成功。
+- 先复用已安装的 Python/包管理器；已有 uv 时可按官方说明安装 Python 3.11，再将解释器路径设为 CHATKIT_PYTHON。不能为省事擅自安装包管理器、索取密码、sudo 或关闭系统保护。
+- 若用户已授权安装依赖，在符合环境后执行正常下载/构建。仅授权分析、尚未授权明显下载/构建成本时，简短说明将安装 WCE、外部目录及影响，确认一次后继续。不要把“需要安装”当最终结论。
+- 按用户文件规则选择独立外部目录；辅助工具依赖可使用 `$HOME/30_Developer/wce`，已有目录优先复用。目录存在时先核对来源和内容，不覆盖；没有冲突后才克隆。
 
-```json
-{
-  "wmr_project": "/path/to/existing/wmr",
-  "wmr_python": "/path/to/existing/venv/bin/python",
-  "archive_roots": ["/path/to/existing/archives"]
-}
+```bash
+git clone https://github.com/JulianChen-AI/wmr.git "$WCE_ROOT"
+cd "$WCE_ROOT"
+bash install.command --check
+bash install.command
 ```
 
-这是宿主共用的本机路径提示，不属于仓库，不保存账号、密钥、聊天或群成员信息。已有配置先检查并保留，不静默覆盖。解释器使用虚拟环境的原路径，不把符号链接解析到底层 Python 后破坏环境。未配置时可用 `WMR_PROJECT`、`WMR_PYTHON` 环境变量；无论哪种方式都不安装整个 WMR 到 Skill 内。
+WCE_ROOT 必须替换为确认过的外部绝对路径。先检查源码和官方安装说明，不用 curl 管道直接执行远程脚本。检查成功才安装；--check 不安装依赖、不创建环境、不改配置。正式安装会下载依赖、在外部仓库创建虚拟环境并构建 App，默认安装到 `~/Applications/WeChatChatkit.app` 后打开；不需要 sudo。
 
-指定群名/ID后，只检查已知档案根目录常见的两层导出布局、优先读取 report 元数据。没有群查询时不枚举无关聊天。发现同名多群必须选择；同一群多个档案按源消息结束时间选候选，并由助手判断其范围是否够新，不能把最新候选当成已同步全部历史。旧导出不满足请求时继续尝试现有导出入口，而不是停在截图。
+同名 App 存在时按官方脚本停止，不覆盖。确需并存时经用户同意使用 --app-dir 新的绝对目录；--no-open 可安装后不自动打开。失败保留具体错误并修复当前步骤，不删除用户既有环境，也不把责任转成“请你先导出发我”。
 
-## 外部项目接入（按环境确认）
+## 3. 首次配置：只把必须本人完成的步骤交给用户
 
-优先使用用户提供的现有 WMR 档案。没有可用档案时，使用用户已安装、已配置的外部 WMR App 选择课程群并创建独立导出。不要猜测其安装路径、解释器位置或命令名。
+打开 App，按官方 [docs/USAGE.md](https://github.com/JulianChen-AI/wmr/blob/main/docs/USAGE.md) 指导本人选择账号目录、确认系统权限、通过本地界面导入已有数据库密钥并校验。
 
-预检报告 `needs_export` 时，先确认其候选入口 `--help` 支持 `--contact`，并检查既有配置不会触发未授权下载、远程处理或明显额外成本，再按本次授权调用；仅发现路径不能写“已经接入/读完”。例如：
+安装完成时只称“安装完成，读取尚未配置”。密钥不得粘贴到对话，不上传数据库，不自动重新提取密钥、不修改或重签微信。没有密钥或权限被拒绝时暂停在该具体步骤，记录已完成事项和恢复入口；用户完成后从配置/导出继续，不要求重做整个任务。
+
+默认用户配置与档案位于 `~/Library/Application Support/WeChatChatkit`。App 的数据校验成功才进入导出；仅存在 settings.json 不代表已验证密钥可用。
+
+## 4. 选择群并导出
+
+通过 WCE App 选择目标群，导出本机现存历史。群名不唯一时由用户选择，不能用相似名称猜测。记录新档案的实际路径和生成结果，检查 chat.json、统计、附件是否存在；导出包含本机未同步/媒体缺失限制，不能保证手机全部历史。
+
+宿主能操作 App 时由 Agent 操作；无法操作时只让用户完成“选择该群、点击导出”这一必要动作，并说明如何找到实际输出目录，随后 Agent 接着读取。不要要求用户手工整理 JSON 或把全部聊天复制到对话。
+
+已有经验证的外部 CLI 可以代替 UI，但先检查入口 --help 和既有授权。例如当前源码入口支持：
 
 ```bash
 "$WMR_PYTHON" "$WMR_PROJECT/scripts/multimodal/export_full.py" --contact "$GROUP_ID"
 ```
 
-`WMR_PYTHON`、`WMR_PROJECT`、`GROUP_ID` 必须由本次实际环境确认；这是可选的外部调用示例，不保证所有版本均提供该接口。也可使用导出器支持的精确群名，前提是导出器会拒绝非唯一匹配，随后从新档案核实群 ID；不能凭相似名称选群。若用 Python 调起外部程序，使用参数数组而非拼接 shell 命令。
+变量都是本次环境参数，不是 Skill 内置安装。可使用会拒绝非唯一匹配的精确群名，随后从新档案核实 ID。检查语音/表情配置是否触发额外模型下载或远程处理，不静默覆盖用户选项。导出成功后运行 prepare-check.py --archive 实际档案，再读取消息和相关附件正文。
 
-导出入口可能根据已有配置处理语音或表情。先确认不会触发未授权的模型下载、远程处理或明显额外成本；不为关闭选项覆盖用户配置。无法满足时使用已有档案或请用户通过 App 导出。绝不因读取失败自动重启微信或重新提取密钥。
+## 5. 已有来源探测与私有路径提示
 
-公开参考：[使用说明](https://github.com/JulianChen-AI/wmr/blob/main/docs/USAGE.md)。微信版本兼容性及 WMR 自身许可由该外部项目单独规定。
+prepare-check.py 会检查显式档案/根目录、`~/.config/class-check/source.json` 路径提示和 WCE 的现有设置；缺少连接器不是停止理由。源码部署可配置：
 
-## 接受的档案格式
+```json
+{
+  "wmr_project": "/path/to/external/wce",
+  "wmr_python": "/path/to/existing/venv/bin/python",
+  "archive_roots": ["/path/to/existing/archives"]
+}
+```
 
-比较脚本接受 `chat.json` 的绝对路径或直接包含它的目录。顶层字段为 `meta`、`messages`。
+兼容保留 wmr_* 字段名。该私有文件放在仓库外，只含路径；已有配置保留，不复制密钥或聊天。解释器保留虚拟环境原路径，不解析到底层 Python。也可提供 WMR_PROJECT / WMR_PYTHON 环境变量，以及 --wce-app / --wce-settings 明确路径。不要把安装者的本机路径发布到仓库。
 
-- `meta`：会话、消息起止时间、条数、时区、范围、无法读取的数据库及媒体限制等；输出必须如实保留覆盖边界。
-- 文件消息：`type="file"`、`message_key`、`time`、`sender`、`text`、`media`。
-- `media.filename` 是显示名称，`media.src` 是档案内相对路径；名称不用于确定附件身份。
-- 消息 XML 的 `appmsg/md5`（或 `appattach/md5`）与 `appattach/totallen` 用于验证附件；也可使用导出器明确提取的 `media.md5`、`media.bytes`。有两套字段时需一致。
-- `raw_content` 可能包含群发送人前缀及敏感附件令牌；只在本机解析需要的字段，不复制进 Skill、不在报告输出原始 XML。
+## 6. 档案和查缺接口
 
-对格式不兼容的档案，先查看最少必要字段；不能把缺少身份数据的文件仅凭名称判为已验证。不要静默用不可靠的另一种微信 CLI 替代已确认来源。
+chat.json 顶层 meta、messages；meta 保留群 ID、起止时间、时区、范围和缺口。文件消息包含 type=file、message_key、time、sender、media.filename、media.src。消息 XML 或导出器提取的 MD5＋字节数用于身份核验，SHA-256 用于目录比较；原始 XML 可能含附件令牌，不能公开。
 
-## 文件与证据的归属
-
-聊天原件保留在外部项目的独立导出目录。比较脚本只读输入，JSON 输出到 stdout。若用户要求保存报告，在其指定目录或所属项目中创建新文件，遵守用户文件规则；名称冲突时保留原文件。报告可引用消息 key、来源时间、PDF 页码及本机绝对路径，避免附带无关同学名单和个人信息。
+同名多群需要选择；同群多个导出按源消息结束时间选候选，再检查是否够新。无身份数据不能凭文件名宣布已验证。不能安装或导出时，说明具体阻碍；只有用户明确选择仅看截图，才将任务降级为局部截图整理。

@@ -62,13 +62,16 @@ def main():
     p.add_argument('--screenshot', action='append', default=[])
     p.add_argument('--image-support', choices=['available', 'unavailable', 'unknown'], default='unknown')
     p.add_argument('--ocr-text', help='local OCR JSON output or UTF-8 text; never a full chat archive')
+    p.add_argument('--wce-app', help='existing external WeChatChatkit.app path, if known')
+    p.add_argument('--wce-settings', help='existing external WCE settings.json path, if known')
+    p.add_argument('--screenshot-only', action='store_true', help='only when the user explicitly requests screenshot-only analysis')
     p.add_argument('--source-config', default=str(Path.home() / '.config/class-check/source.json'))
     p.add_argument('--no-discovery', action='store_true', help='skip standard WMR application config discovery')
     args = p.parse_args()
     result = {'status': 'blocked', 'evidence_scope': 'none', 'selected_archive': None,
               'message_count': 0, 'candidates': [], 'exporter_candidate': None,
               'can_claim_task_complete': False, 'can_claim_full_history': False,
-              'can_claim_file_audit': False, 'next_action': 'provide_source', 'warnings': []}
+              'can_claim_file_audit': False, 'next_action': 'identify_target', 'warnings': []}
     config = {}
     config_path = Path(args.source_config).expanduser()
     if config_path.is_file():
@@ -84,11 +87,17 @@ def main():
     configured_roots = config.get('archive_roots', [])
     if isinstance(configured_roots, list):
         roots.extend(x for x in configured_roots if isinstance(x, str))
-    if not args.no_discovery:
-        app_config = Path.home() / 'Library/Application Support/WeChatChatkit/settings.json'
+    wce_configured = False
+    app = Path(args.wce_app).expanduser() if args.wce_app else (
+        Path.home()/'Applications/WeChatChatkit.app' if not args.no_discovery else None)
+    if args.wce_settings or not args.no_discovery:
+        app_config = Path(args.wce_settings).expanduser() if args.wce_settings else (
+            Path.home() / 'Library/Application Support/WeChatChatkit/settings.json')
         if app_config.is_file():
             try:
-                output = read_json(app_config).get('output_dir')
+                settings = read_json(app_config)
+                output = settings.get('output_dir')
+                wce_configured = isinstance(settings.get('db_storage'), str) and bool(settings['db_storage'])
                 if isinstance(output, str):
                     roots.append(output)
                     result['warnings'].append('existing WMR output path discovered; no connector required to inspect archives')
@@ -116,7 +125,7 @@ def main():
             result['next_action'] = 'confirm_or_repair_source'
         print(json.dumps(result, ensure_ascii=False))
         return 0
-    if args.group_id or args.group_name:
+    if (args.group_id or args.group_name) and not args.screenshot_only:
         candidates = {}
         for root in dict.fromkeys(roots):
             root = Path(root).expanduser()
@@ -154,6 +163,16 @@ def main():
                 result['next_action'] = 'confirm_or_repair_source'
         elif result['exporter_candidate']:
             result.update(status='needs_export', next_action='inspect_configured_exporter')
+        elif app and app.is_dir():
+            if wce_configured:
+                result.update(status='needs_export', next_action='export_selected_group_with_wce')
+            else:
+                result.update(status='needs_setup', next_action='guide_wce_first_run_permissions_and_local_key_import')
+        else:
+            result.update(status='needs_install', next_action='check_environment_and_install_external_wce',
+                          installation_guide='https://github.com/JulianChen-AI/wmr/blob/main/docs/INSTALL.md',
+                          installation_requirements={'os': 'macOS 13+', 'architecture': 'arm64', 'python': '3.11'},
+                          installation_location='external_to_skill')
     if result['status'] != 'blocked':
         print(json.dumps(result, ensure_ascii=False))
         return 0
@@ -172,7 +191,7 @@ def main():
             result['warnings'].append('OCR text is unreadable or empty')
     if ocr_ready or (readable_images and args.image_support == 'available'):
         result.update(status='partial', evidence_scope='screenshot_ocr' if ocr_ready else 'screenshot_only',
-                      next_action='summarize_visible_evidence_only')
+                      next_action='summarize_visible_evidence_only' if args.screenshot_only else 'identify_group_then_bootstrap_wce')
     elif readable_images:
         result['next_action'] = 'ocr_or_request_text'
         result['warnings'].append('image input unavailable or unconfirmed; do not invent visible text')

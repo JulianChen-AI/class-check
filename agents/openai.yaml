@@ -1,4 +1,4 @@
 interface:
   display_name: "课程检查"
-  short_description: "先核实输入和数据接入，再整理课程或项目群通知，核对本地资料缺漏"
-  default_prompt: "用 $class-check 先检查数据来源，再整理这个课程或比赛项目的重要信息，并核对本地资料缺漏。"
+  short_description: "引导准备 WCE 并导出真实群记录，再整理重要事项、基本信息和资料缺漏"
+  default_prompt: "用 $class-check 梳理这门课或比赛项目；需要时先准备 WCE 并导出真实群记录，再按重要事项、基本信息、缺少资料的结构分析。"

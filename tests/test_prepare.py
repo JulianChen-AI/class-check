@@ -143,6 +143,41 @@ class PrepareTests(unittest.TestCase):
                  for p in self.root.rglob('*') if p.is_file()}
         self.assertEqual(before, after)
 
+    def test_fresh_course_routes_to_external_wce_installation(self):
+        d = self.run_gate('--group-name', 'Example course')
+        self.assertEqual(d['status'], 'needs_install')
+        self.assertEqual(d['next_action'], 'check_environment_and_install_external_wce')
+        self.assertIn('docs/INSTALL.md', d['installation_guide'])
+        self.assertFalse(d['can_claim_task_complete'])
+
+    def test_installed_wce_without_config_routes_to_setup(self):
+        app = self.root / 'WeChatChatkit.app'
+        app.mkdir()
+        d = self.run_gate('--group-name', 'Example course', '--wce-app', str(app))
+        self.assertEqual(d['status'], 'needs_setup')
+        self.assertEqual(d['next_action'], 'guide_wce_first_run_permissions_and_local_key_import')
+
+    def test_configured_wce_app_routes_to_export(self):
+        app = self.root / 'WeChatChatkit.app'
+        app.mkdir()
+        settings = self.root / 'settings.json'
+        settings.write_text(json.dumps({'db_storage': '/synthetic/account/db_storage',
+                                         'output_dir': str(self.root/'archives')}))
+        d = self.run_gate('--group-name', 'Example course', '--wce-app', str(app),
+                          '--wce-settings', str(settings))
+        self.assertEqual(d['status'], 'needs_export')
+        self.assertEqual(d['next_action'], 'export_selected_group_with_wce')
+
+    def test_screenshot_default_identifies_group_then_continues_wce_workflow(self):
+        d = self.run_gate('--screenshot', str(self.image), '--image-support', 'available')
+        self.assertEqual(d['next_action'], 'identify_group_then_bootstrap_wce')
+
+    def test_explicit_screenshot_only_does_not_install_wce(self):
+        d = self.run_gate('--group-name', 'Example course', '--screenshot-only',
+                          '--screenshot', str(self.image), '--image-support', 'available')
+        self.assertEqual(d['status'], 'partial')
+        self.assertEqual(d['next_action'], 'summarize_visible_evidence_only')
+
 
 if __name__ == '__main__':
     unittest.main()
