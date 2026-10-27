@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#285be2">
+  <title>class-check · 课程检查</title>
+  <meta name="description" content="用 WCE 导出真实微信群记录，整理课程与项目重要事项，按内容核对资料缺漏。适用于 Codex、WorkBuddy 的非商业 Skill。">
+  <meta property="og:title" content="class-check · 课程检查">
+  <meta property="og:description" content="群里的课程信息，这次理清楚。WCE 导出、事项梳理、资料查缺。">
+  <meta property="og:image" content="https://julianchen-ai.github.io/class-check/assets/cover.png">
+  <meta property="og:url" content="https://julianchen-ai.github.io/class-check/">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#main">跳到项目介绍</a>
+  <div class="wrap">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="class-check 课程检查首页">class-check · 课程检查</a>
+      <a href="https://github.com/JulianChen-AI/class-check">查看 GitHub 项目</a>
+    </header>
+    <main id="main">
+      <section class="intro" aria-label="项目简介">
+        <p class="intro-title">把群聊导出，变成看得懂的课程资料。</p>
+        <p>用真实记录梳理作业、考试与项目节点，再核对哪些资料还没放进文件夹。</p>
+      </section>
+      <figure class="hero">
+        <img src="assets/cover.svg" width="1600" height="840" alt="class-check：群里的课程信息，这次理清楚。右侧为导出、梳理、核对的工作流示意。">
+        <figcaption>工作流示意，不是已发布的聊天分析 App 界面。</figcaption>
+      </figure>
+      <article class="document">
+        <div class="title-row">
+          <h1>class-check · 课程检查</h1>
+          <span class="license-label">仅限非商业使用</span>
+        </div>
+        <p class="lead">给 Codex、WorkBuddy 一套从微信记录到资料清单的处理流程：需要时先准备 WCE，再导出、阅读和核对，最后给你一份有依据的梳理。</p>
+        <p>这是一个 <strong>Agent Skill</strong>，不是独立聊天软件，也不是网页上传分析工具。你的聊天、密钥和课程文件不需要上传到这个展示页。</p>
+        <nav class="actions" aria-label="项目入口">
+          <a class="button primary" href="#install">安装与使用</a>
+          <a class="button secondary" href="https://github.com/JulianChen-AI/class-check/archive/refs/heads/main.zip">下载源码</a>
+          <a class="text-link" href="https://github.com/JulianChen-AI/class-check/blob/main/SKILL.md">阅读完整 Skill</a>
+        </nav>
+
+        <section id="features">
+          <h2>可以做什么</h2>
+          <ul>
+            <li><strong>梳理重要事项：</strong>作业截止、考试范围、展示排期、签到要求；比赛项目则整理赛程、交付物、分工和会议决策。</li>
+            <li><strong>读记录，也读附件：</strong>不把一张截图当成全部群历史，重要结论保留通知日期和附件依据。</li>
+            <li><strong>按内容找缺漏：</strong>附件改了名字仍能识别；同名但内容不同，会提示版本差异。</li>
+            <li><strong>给出能用的报告：</strong>重要事项在前，基本信息用表格，缺少的资料带实际可用链接。</li>
+          </ul>
+        </section>
+
+        <section id="workflow">
+          <h2>从群聊到结果</h2>
+          <div class="workflow" aria-label="四步工作流程">
+            <div><span>1</span><h3>识别群聊</h3><p>给出群名或截图，以及本地资料目录。</p></div>
+            <div><span>2</span><h3>准备与导出</h3><p>复用已有 WCE；缺少时引导在外部安装。</p></div>
+            <div><span>3</span><h3>阅读与核对</h3><p>分析真实记录，按文件内容比较目录。</p></div>
+            <div><span>4</span><h3>交付梳理</h3><p>事项、基本信息、资料缺漏及来源边界。</p></div>
+          </div>
+          <p class="note">WCE 首次配置中的系统权限和本地密钥导入，需要本人完成。Skill 不索取你在对话中发送密钥。</p>
+        </section>
+
+        <section id="report">
+          <h2>最后交付什么</h2>
+          <div class="report-preview">
+            <div class="report-head"><span class="report-dot"></span><strong>一份课程梳理的结构</strong><span>格式示意</span></div>
+            <div class="report-body">
+              <h3>最需要关注的事</h3>
+              <p>作业与截止日期、考试安排、小组展示、考勤和调课。只整理记录中确实出现的要求。</p>
+              <h3>课程／项目基本信息</h3>
+              <div class="table-wrap"><table><thead><tr><th>项目</th><th>信息</th></tr></thead><tbody><tr><td>教师／负责人</td><td>依据群通知或附件整理</td></tr><tr><td>时间与地点</td><td>已确认安排，未知项明确标注</td></tr><tr><td>教材／交付要求</td><td>区分教材章节、课件编号与具体要求</td></tr></tbody></table></div>
+              <h3>哪些文件没有放进目标文件夹？</h3>
+              <p>列出缺少文件的名称、用途、群发送日期与可用附件链接；行政统计表、名单和视频单独说明。</p>
+            </div>
+          </div>
+          <p>报告中的数量、日期与文件都来自本次实际读取，不套用示例数字。比赛项目会换成对应字段，不硬套课程作业。</p>
+        </section>
+
+        <section id="install">
+          <h2>安装与使用</h2>
+          <p>宿主需要支持读取本地文件、执行 Python 工具。将仓库放入对应的 Skill 目录；<strong>目标目录已存在时，先检查和备份，不要直接覆盖。</strong></p>
+          <div class="code-label"><h3>Codex</h3></div>
+          <pre><code id="codex-command">git clone https://github.com/JulianChen-AI/class-check.git ~/.codex/skills/class-check</code></pre>
+          <div class="code-label"><h3>WorkBuddy</h3></div>
+          <pre><code id="workbuddy-command">git clone https://github.com/JulianChen-AI/class-check.git ~/.workbuddy/skills/class-check</code></pre>
+          <p>让宿主重新读取 Skill，提供群名／截图和资料目录，然后说：</p>
+          <div class="prompt"><p id="prompt-text">用 class-check 梳理这门课或比赛项目。需要时先引导安装和配置 WCE，导出真实群记录，再整理重要事项、基本信息，并核对本地资料缺漏。</p></div>
+          <p class="copy-hint">安装命令和提示词均可直接选中复制。</p>
+          <p class="note">Skill 的 Python 辅助脚本需要 Python 3.9+。WCE 的新机源码安装另需 Apple Silicon、macOS 13+ 和原生 Python 3.11，具体以其官方安装说明为准。已有可用环境或档案时优先复用。</p>
+        </section>
+
+        <section id="architecture">
+          <h2>技术结构</h2>
+          <pre class="architecture"><code>Codex / WorkBuddy
+    └─ class-check Skill：组织流程、阅读证据、生成报告
+        ├─ WCE（外部）：安装、配置、导出真实群记录
+        ├─ prepare-check.py：检查已有来源与下一步
+        ├─ compare-attachments.py：附件身份与内容核对
+        └─ ocr-image.swift：必要时在本地识别截图文字</code></pre>
+          <p>消息中的 MD5 与字节数用于确认附件身份，SHA-256 用于比较本地文件内容。WCE 不内嵌到 Skill 中；准备、安装和导出按授权在外部完成。</p>
+        </section>
+
+        <section id="status">
+          <h2>当前状态与边界</h2>
+          <p>已实现 WCE 准备、首次配置、导出和分析的流程指引，以及来源预检、附件核对和可选的 macOS 本地 OCR。预检和文件核对已有离线行为回归。</p>
+          <ul>
+            <li>本机可导出的记录，不保证覆盖手机全部历史；缺失媒体和不可读附件会单独说明。</li>
+            <li>默认只读分析，不自动补拷、覆盖课件，不发消息、邮件或提醒。</li>
+            <li>截图通常是识别线索，不是群历史；只有你明确要求时才只分析截图。</li>
+            <li>Skill 不能控制宿主模型。干净 Mac 首次安装及不同宿主的实际执行效果，仍需实机验证。</li>
+          </ul>
+        </section>
+
+        <section id="license">
+          <h2>来源与许可</h2>
+          <p>聊天导出使用 <a href="https://github.com/JulianChen-AI/wmr">WCE · 微信全导</a>，外部依赖遵守其自身许可。</p>
+          <p>本项目<strong>仅限非商业使用</strong>，允许非商业学习、教学、研究及遵守许可的修改和再分发。商用须取得作者事先书面授权。详见 <a href="https://github.com/JulianChen-AI/class-check/blob/main/LICENSE">LICENSE</a>。</p>
+          <p>本展示页不收集聊天，不提供文件上传；不授权第三方课程资料或用户数据的使用。</p>
+        </section>
+      </article>
+    </main>
+    <footer><span>class-check · 课程检查</span><a href="https://github.com/JulianChen-AI/class-check">JulianChen-AI / class-check</a></footer>
+  </div>
+</body>
+</html>
