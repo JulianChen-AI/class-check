@@ -1,0 +1,38 @@
+Class Check Non-Commercial License 1.0
+
+Copyright (c) 2026 JulianChen-AI. All rights reserved except as granted below.
+
+1. Non-commercial permission
+Permission is granted to use, copy, study, modify, and redistribute this software
+and its documentation solely for non-commercial purposes, provided this license
+and the copyright notice are retained in copies and substantial portions.
+Non-commercial personal learning, teaching, and research are permitted.
+Modified distributions must identify that changes were made.
+
+2. Commercial use prohibited
+Commercial use requires separate prior written permission from the copyright
+holder. Without that permission, you may not sell, rent, sublicense for a fee,
+include in paid products or services, provide paid hosting or consulting using
+this software, or use it to support commercial business operations. Use intended
+primarily for commercial advantage or monetary compensation is prohibited.
+Redistributing modified versions does not remove these restrictions.
+
+3. Scope
+This license covers only the software and documentation in this repository.
+It does not grant rights to WeChat, WMR, third-party tools, course materials,
+chat records, or user data, and does not claim ownership of user inputs or outputs.
+External dependencies remain governed by their own licenses.
+
+4. No warranty or liability
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR
+NONINFRINGEMENT. TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE COPYRIGHT HOLDER
+IS NOT LIABLE FOR CLAIMS, DAMAGES, OR OTHER LIABILITY ARISING FROM ITS USE.
+
+For commercial permission, contact JulianChen-AI through GitHub before use.
+
+中文说明（便于阅读；许可条款以以上英文为准）：
+允许非商业目的的个人学习、教学、研究、复制、修改和再分发，须保留本许可及版权声明。
+禁止未经事先书面授权的商业使用，包括销售、付费产品或服务、付费托管或咨询，以及支持商业业务运营。
+修改或再分发不能移除非商业限制。外部项目适用其自身许可；本许可不授权课程资料、聊天或用户数据的使用。
+软件按现状提供，不作保证。

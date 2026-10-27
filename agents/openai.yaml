@@ -1,0 +1,4 @@
+interface:
+  display_name: "课程检查"
+  short_description: "读取微信课程群并整理课程通知、核对课程目录中的资料缺漏与版本差异"
+  default_prompt: "用 $class-check 整理这门课的重要信息，并核对课程文件夹缺少哪些群附件。"
